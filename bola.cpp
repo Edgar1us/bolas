@@ -4,15 +4,23 @@
 #include <QBrush>
 #include <QColor>
 
+int Bola::vidaInicial;
 
 Bola::Bola(float posicionX, float posicionY, float velX, float velY){
     this->posicionX = posicionX;
     this->posicionY = posicionY;
     this->velX = velX;
     this->velY = velY;
+
+    vida=vidaInicial;
 }
 
-Bola::Bola(){}
+Bola::Bola(){
+
+        
+        vida=vidaInicial;
+
+}
 
 void Bola::moverBola(int ancho, int alto){
         //seccion de deteccion de colision contra los bordes

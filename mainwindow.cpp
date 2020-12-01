@@ -9,10 +9,10 @@
 #include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
-        resize(800, 600);
-
+        resize(400, 200);
+        Bola::vidaInicial=100;
         temporizador = new QTimer();
-        temporizador->setInterval(20);
+        temporizador->setInterval(100);
         temporizador->setSingleShot(false);
         temporizador->start();
 
@@ -54,52 +54,73 @@ void MainWindow::incializarMenus(){
         menuFichero->addAction(accionDInformacion);
         
 }
-/******************************************** CREAR ACCIONES ******************************************************/
 
 
 
-/******************************************************************************************************************/
-
-/********************************************* CREAR MENUS ********************************************************/
-
-
-/******************************************************************************************************************/
-
-/*********************************************** METODOS **********************************************************/
 
 
 
-/******************************************************************************************************************/
-
-/*********************************************** EVENTOS **********************************************************/
+/* EVENTOS **********************************************************/
 
 void MainWindow::paintEvent(QPaintEvent * evento){
         QPainter pintor(this);
         
         for (int i = 0; i < bolas.size(); i++){
                 bolas.at(i)->pintar(pintor);
+                //pintor.drawText(bolas.at(i)->posicionX - 10, bolas.at(i)->posicionY - 20, QString::number(bolas.at(i)->vida));
+
+                int ancho = bolas.at(i)->diametro;
+                float anchoVerde = ((float)bolas.at(i)->vida / bolas.at(i)->vidaInicial) * (float)ancho;
+                float anchoRojo = (ancho - (float)anchoVerde);
+                pintor.setBrush(Qt::green);
+                pintor.drawRect(bolas.at(i)->posicionX, bolas.at(i)->posicionY, anchoVerde, 3);
+                pintor.setBrush(Qt::red);
+                pintor.drawRect(bolas.at(i)->posicionX + anchoVerde, bolas.at(i)->posicionY, anchoRojo, 3);
+                
         }
 
         bolaJugador->pintar(pintor);
+        //pintor.drawText(bolaJugador->posicionX - 10, bolaJugador->posicionY - 20, QString::number(bolaJugador->vida));
+
+        int ancho = bolaJugador->diametro;
+        float anchoVerde = ((float)bolaJugador->vida / bolaJugador->vidaInicial) * (float)ancho;
+        float anchoRojo = (ancho - (float)anchoVerde);
+        pintor.setBrush(Qt::green);
+        pintor.drawRect(bolaJugador->posicionX, bolaJugador->posicionY, anchoVerde, 3);
+        pintor.setBrush(Qt::red);
+        pintor.drawRect(bolaJugador->posicionX + anchoVerde, bolaJugador->posicionY, anchoRojo, 3);
        
         
 }
 
-//void MainWindow::keyPressEvent(QKeyEvent * evento){
+void MainWindow::mousePressEvent(QMouseEvent * event){
+        inicialMouseClickX = event()->x();
+        inicialMouseClickY = event()->y();
+}
 
-        /*if (teclaPulsada == arriba){
+void MainWindow::mouseReleaseEvent(QMouseEvent * event){
+        
+}
+
+void MainWindow::keyPressEvent(QKeyEvent * evento){
+
+        if ( evento->key() == Qt::Key_Up){
                 bolaJugador->velY = bolaJugador->velY - 0.05;
-        }*/
+        }
+        if ( evento->key() == Qt::Key_Down){
+                bolaJugador->velY = bolaJugador->velY + 0.05;
+        }
+        if ( evento->key() == Qt::Key_Left){
+                bolaJugador->velX = bolaJugador->velX - 0.05;
+        }
+        if ( evento->key() == Qt::Key_Right){
+                bolaJugador->velX = bolaJugador->velX + 0.05;
+        }
         
 
-//}
+}
 
-        
-/*****************************************************************************************************************/
-
-
-
-/************************************************ SLOTS **********************************************************/
+/* SLOTS **********************************************************/
 
 void MainWindow::slotRepintar(){
         for (int i = 0; i < bolas.size(); i++){
@@ -109,11 +130,22 @@ void MainWindow::slotRepintar(){
         for (int i = 0; i < bolas.size(); i++){
                 for (int j = 0; j < bolas.size(); j++){
                        if (bolas.at(i) != bolas.at(j)){
-                               bolas.at(i)->choca(bolas.at(j));
+                               if(bolas.at(i)->choca(bolas.at(j))){
+                                       bolas.at(i)->vida--;
+                                       bolas.at(j)->vida--;
+                               }
                        }
                 }
                 
         }
+
+        for (int i = 0; i < bolas.size(); i++){
+                if (bolaJugador->choca(bolas.at(i)))
+                {
+                        bolaJugador->vida--;
+                        bolas.at(i)->vida--;
+                }
+        }        
         
         bolaJugador->moverBola(width(), height());
 

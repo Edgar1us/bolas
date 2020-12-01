@@ -18,6 +18,7 @@ public:
     void paintEvent(QPaintEvent *event);
 
     Bola bola;
+    
 
     QTimer *temporizador;
     QVector <Bola*> bolas;
@@ -26,6 +27,9 @@ public:
 
     void inicializarBolas();
     void incializarMenus();
+    void keyPressEvent(QKeyEvent *);
+    void mousePressEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
 
     DInformacion * dInformacion;
     QAction * accionDInformacion;
